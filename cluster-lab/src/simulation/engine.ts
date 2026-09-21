@@ -6,7 +6,6 @@ import {
   REPLICATION_FACTOR,
   SCENES,
   WORKER_IDS,
-  WORKER_LABEL,
   type WorkerId,
 } from './scenario'
 
@@ -140,24 +139,14 @@ const JOB_BY_SCENE: JobStatus[] = [
 
 function eventsThrough(sceneIndex: number): ClusterEvent[] {
   const log: ClusterEvent[] = [
-    ev(0, 0, 'SYSTEM', 'cluster online · 1 master · 3 workers'),
-    ev(0, 1, 'MASTER', 'NameNode + YARN ResourceManager ready (HA-ready)'),
-    ev(0, 2, 'WORKER', 'w1 w2 w3 heartbeat healthy'),
+    ev(0, 0, 'SYSTEM', 'cluster online'),
   ]
 
   if (sceneIndex >= 1) {
-    log.push(
-      ev(1, 0, 'CLIENT', `put ${FILE_NAME} (${FILE_MB} MB)`),
-      ev(1, 1, 'MASTER', 'accepted write + processing job'),
-    )
+    log.push(ev(1, 0, 'CLIENT', `put ${FILE_NAME} ${FILE_MB} MB`))
   }
   if (sceneIndex >= 2) {
-    const parts = splitFile(FILE_MB, BLOCK_SIZE_MB)
-    log.push(
-      ev(2, 0, 'HDFS', `split file · block size ${BLOCK_SIZE_MB} MB`),
-      ev(2, 1, 'HDFS', `${blockEquation(FILE_MB, BLOCK_SIZE_MB)} MB · ${parts.length} blocks`),
-      ev(2, 2, 'MASTER', 'last block is not padded to 128 MB'),
-    )
+    log.push(ev(2, 0, 'HDFS', `${blockEquation(FILE_MB, BLOCK_SIZE_MB)} MB`))
   }
   if (sceneIndex >= 3) {
     const placed = placeReplicas(
@@ -167,48 +156,24 @@ function eventsThrough(sceneIndex: number): ClusterEvent[] {
     )
     placed.forEach((block, i) => {
       log.push(
-        ev(
-          3,
-          i,
-          'MASTER',
-          `assigned ${block.label} -> ${block.primaryWorker}  replicas ${block.locations.join(',')}`,
-        ),
+        ev(3, i, 'MASTER', `${block.label} → ${block.primaryWorker} ×${REPLICATION_FACTOR}`),
       )
     })
-    log.push(ev(3, 4, 'HDFS', `replication factor ${REPLICATION_FACTOR} · write complete`))
   }
   if (sceneIndex >= 4) {
-    log.push(
-      ev(4, 0, 'YARN', 'ResourceManager scheduling containers'),
-      ev(4, 1, 'YARN', 'container 2 vcores / 2048 MB -> w1'),
-      ev(4, 2, 'YARN', 'container 2 vcores / 2048 MB -> w2'),
-      ev(4, 3, 'YARN', 'container 2 vcores / 2048 MB -> w3'),
-    )
+    log.push(ev(4, 0, 'YARN', 'containers on w1 w2 w3'))
   }
   if (sceneIndex >= 5) {
-    log.push(
-      ev(5, 0, 'WORKER', 'w1 mapping block-1'),
-      ev(5, 1, 'WORKER', 'w2 mapping block-2'),
-      ev(5, 2, 'WORKER', 'w3 mapping block-3'),
-      ev(5, 3, 'MASTER', 'map -> shuffle -> reduce (parallel maps)'),
-    )
+    log.push(ev(5, 0, 'WORKER', 'map parallel on all workers'))
   }
   if (sceneIndex >= 6) {
     log.push(
-      ev(6, 0, 'SYSTEM', `${KILL_TARGET} heartbeat lost`),
-      ev(6, 1, 'MASTER', `${WORKER_LABEL[KILL_TARGET]} unavailable`),
-      ev(6, 2, 'HDFS', 'block-2 still on w1,w3 · no data lost'),
-      ev(6, 3, 'YARN', 'killed container on w2'),
-      ev(6, 4, 'MASTER', 'reassigned block-2 map -> w3'),
+      ev(6, 0, 'SYSTEM', 'w2 failed'),
+      ev(6, 1, 'MASTER', 'reassign block-2 → w3'),
     )
   }
   if (sceneIndex >= 7) {
-    log.push(
-      ev(7, 0, 'WORKER', 'w3 map block-2 complete'),
-      ev(7, 1, 'MASTER', 'shuffle + reduce finished'),
-      ev(7, 2, 'HDFS', 'wrote part-r-00000'),
-      ev(7, 3, 'CLIENT', 'result ready'),
-    )
+    log.push(ev(7, 0, 'CLIENT', 'result ready'))
   }
   return log
 }

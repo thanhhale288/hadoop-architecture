@@ -28,20 +28,20 @@ export function PlaybackBar({
   const canNext = sceneIndex < LAST_SCENE
 
   return (
-    <footer className="flex shrink-0 flex-wrap items-center gap-2 border-t border-white/8 bg-[#0c0c10] px-4 py-2.5">
+    <footer className="sticky bottom-0 z-20 flex shrink-0 flex-wrap items-center gap-2 border-t border-white/8 bg-[#0c0c10]/95 px-3 py-2.5 backdrop-blur sm:px-4">
       <button
         type="button"
         onClick={playing ? onPause : onPlay}
-        className="inline-flex items-center gap-1.5 rounded-md bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-cyan-300"
+        className="inline-flex items-center gap-1.5 rounded-md bg-cyan-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-300"
       >
-        {playing ? <Square size={13} /> : <Play size={13} />}
-        {playing ? 'Pause' : 'Play scene'}
+        {playing ? <Square size={15} /> : <Play size={15} />}
+        {playing ? 'Pause' : 'Play'}
       </button>
       <button
         type="button"
         onClick={onPrev}
         disabled={sceneIndex === 0}
-        className="rounded-md border border-white/10 px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-30"
+        className="rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 disabled:opacity-30"
       >
         Back
       </button>
@@ -49,39 +49,36 @@ export function PlaybackBar({
         type="button"
         onClick={onNext}
         disabled={!canNext}
-        className="inline-flex items-center gap-1 rounded-md border border-white/10 px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-30"
+        className="inline-flex items-center gap-1 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 disabled:opacity-30"
       >
-        Next <ChevronRight size={13} />
+        Next <ChevronRight size={15} />
       </button>
       <button
         type="button"
         onClick={onKill}
         disabled={!canKill}
-        className="inline-flex items-center gap-1.5 rounded-md border border-rose-500/40 bg-rose-950/50 px-3 py-1.5 text-xs font-semibold text-rose-200 hover:bg-rose-900/60 disabled:opacity-30"
+        className="inline-flex items-center gap-1.5 rounded-md border border-rose-500/40 bg-rose-950/50 px-3 py-2 text-sm font-semibold text-rose-200 hover:bg-rose-900/60 disabled:opacity-30"
       >
-        <Skull size={13} />
-        Kill Worker 2
+        <Skull size={15} />
+        Kill W2
       </button>
       <button
         type="button"
         onClick={onReplay}
-        className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/5"
+        className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-300 hover:bg-white/5"
       >
-        <RotateCcw size={13} />
+        <RotateCcw size={15} />
         Replay
       </button>
       {sceneIndex === LAST_SCENE ? (
         <button
           type="button"
           onClick={onTakeaways}
-          className="rounded-md border border-cyan-400/30 px-3 py-1.5 text-xs font-medium text-cyan-200 hover:bg-cyan-400/10"
+          className="rounded-md border border-cyan-400/30 px-3 py-2 text-sm font-medium text-cyan-200 hover:bg-cyan-400/10"
         >
           Takeaways
         </button>
       ) : null}
-      <p className="playback-hint ml-auto hidden font-mono text-[11px] text-zinc-600 md:block">
-        Space play · ← → step · K fail over · R replay · P presentation
-      </p>
     </footer>
   )
 }

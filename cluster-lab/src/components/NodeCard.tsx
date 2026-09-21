@@ -4,7 +4,6 @@ import type { NodeStatus } from '../simulation/engine'
 
 interface NodeCardProps {
   title: string
-  subtitle: string
   status: NodeStatus | 'client'
   icon: 'client' | 'master' | 'worker'
   badge?: string
@@ -21,7 +20,6 @@ const ICONS = {
 
 export function NodeCard({
   title,
-  subtitle,
   status,
   icon,
   badge,
@@ -41,16 +39,16 @@ export function NodeCard({
 
   return (
     <article
-      className={`relative flex h-full min-h-0 min-w-0 flex-col rounded-xl border p-4 ${ring} ${className}`}
+      className={`relative flex h-full min-h-0 min-w-0 flex-col rounded-xl border p-3.5 sm:p-4 ${ring} ${className}`}
     >
       {down ? (
-        <span className="absolute -top-2 right-3 inline-flex items-center gap-1 rounded-full border border-rose-500/40 bg-rose-950 px-2 py-0.5 font-mono text-[10px] text-rose-300">
-          <AlertTriangle size={10} /> FAILED
+        <span className="absolute -top-2 right-3 inline-flex items-center gap-1 rounded-full border border-rose-500/40 bg-rose-950 px-2 py-0.5 font-mono text-xs text-rose-300">
+          <AlertTriangle size={12} /> FAILED
         </span>
       ) : null}
-      <div className="flex items-start gap-2.5">
+      <div className="flex items-center gap-2.5">
         <span
-          className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+          className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${
             down
               ? 'bg-rose-500/15 text-rose-300'
               : icon === 'master'
@@ -60,29 +58,26 @@ export function NodeCard({
                   : 'bg-emerald-400/10 text-emerald-300'
           }`}
         >
-          <Icon size={16} />
+          <Icon size={18} />
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-[15px] font-semibold text-zinc-100">{title}</h3>
-            {badge ? (
-              <span className="rounded-full border border-white/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-zinc-400 uppercase">
-                {badge}
-              </span>
-            ) : null}
-          </div>
-          <p className="text-[11px] text-zinc-500">{subtitle}</p>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <h3 className="text-base font-semibold text-zinc-100 sm:text-lg">{title}</h3>
+          {badge ? (
+            <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[11px] tracking-wide text-zinc-400 uppercase">
+              {badge}
+            </span>
+          ) : null}
         </div>
         {status !== 'client' && !down ? (
           <span
-            className={`mt-1 size-2 shrink-0 rounded-full ${
+            className={`size-2.5 shrink-0 rounded-full ${
               status === 'busy' ? 'bg-cyan-400' : 'bg-emerald-400'
             }`}
           />
         ) : null}
       </div>
       {children ? (
-        <div className="mt-3 flex flex-1 flex-wrap content-start gap-1.5">{children}</div>
+        <div className="mt-3 flex flex-1 flex-wrap content-start gap-2">{children}</div>
       ) : null}
     </article>
   )
