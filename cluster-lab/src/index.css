@@ -16,22 +16,31 @@ html,
 body,
 #root {
   height: 100%;
+  min-height: 100dvh;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--color-canvas);
   color: #e4e4e7;
   font-family: var(--font-sans);
+  font-size: 17px;
   -webkit-font-smoothing: antialiased;
 }
 
 html.presentation body {
-  font-size: 18px;
+  font-size: 19px;
 }
 
-html.presentation .playback-hint {
-  display: none;
+@media (max-width: 767px) {
+  body {
+    font-size: 16px;
+  }
+
+  html.presentation body {
+    font-size: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

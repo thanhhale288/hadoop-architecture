@@ -18,25 +18,24 @@ export function EventLog({ events }: EventLogProps) {
   const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: 'end' })
+    endRef.current?.scrollIntoView({ block: 'nearest' })
   }, [events.length])
 
   return (
     <section className="flex h-full min-h-0 flex-col border-t border-white/8 bg-[#07070b]">
-      <div className="flex items-center justify-between border-b border-white/8 px-4 py-2">
-        <p className="text-[10px] font-semibold tracking-[0.18em] text-zinc-500 uppercase">
-          Cluster events
+      <div className="flex items-center justify-between border-b border-white/8 px-3 py-2 sm:px-4">
+        <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase">
+          Events
         </p>
-        <p className="font-mono text-[10px] text-zinc-600">{events.length} lines</p>
       </div>
-      <div className="min-h-0 flex-1 overflow-auto px-4 py-2 font-mono text-[11px] leading-6">
+      <div className="min-h-0 flex-1 overflow-auto px-3 py-2 font-mono text-xs leading-6 sm:px-4 sm:text-sm sm:leading-7">
         {events.map((event) => (
-          <p key={event.id} className="flex gap-3">
+          <p key={event.id} className="flex flex-wrap gap-x-2 gap-y-0.5 sm:flex-nowrap sm:gap-3">
             <span className="shrink-0 text-zinc-600">{event.time}</span>
-            <span className={`w-16 shrink-0 ${SOURCE_COLOR[event.source]}`}>
+            <span className={`w-14 shrink-0 sm:w-16 ${SOURCE_COLOR[event.source]}`}>
               {event.source}
             </span>
-            <span className="text-zinc-300">{event.message}</span>
+            <span className="min-w-0 break-words text-zinc-300">{event.message}</span>
           </p>
         ))}
         <div ref={endRef} />

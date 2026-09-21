@@ -18,25 +18,16 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
   const unplaced = state.sceneIndex === 2
 
   return (
-    <section className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[radial-gradient(ellipse_at_top,_rgba(34,211,238,0.07),_transparent_50%)] p-4 md:p-6">
-
-      <p className="relative z-10 mb-2 font-mono text-[10px] tracking-[0.18em] text-zinc-600 uppercase">
-        Client → Master
-      </p>
-      <div className="relative z-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <NodeCard
-          title="Client"
-          subtitle="Submits the file and the job"
-          status="client"
-          icon="client"
-        >
+    <section className="relative flex min-h-0 flex-1 flex-col overflow-auto bg-[radial-gradient(ellipse_at_top,_rgba(34,211,238,0.07),_transparent_50%)] p-3 sm:p-4 md:overflow-hidden md:p-5">
+      <div className="relative z-10 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+        <NodeCard title="Client" status="client" icon="client">
           <AnimatePresence>
             {state.fileAtClient && !state.resultReady ? (
               <motion.div
                 key="file"
                 initial={reducedMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-md border border-white/15 bg-white/5 px-2 py-1 font-mono text-[11px] text-zinc-200"
+                className="rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 font-mono text-sm text-zinc-200"
               >
                 {FILE_NAME} · {FILE_MB} MB
               </motion.div>
@@ -46,9 +37,9 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
                 key="result"
                 initial={reducedMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 font-mono text-[11px] text-emerald-200"
+                className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1.5 font-mono text-sm text-emerald-200"
               >
-                part-r-00000 · ready
+                result ready
               </motion.div>
             ) : null}
           </AnimatePresence>
@@ -56,10 +47,8 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
 
         <NodeCard
           title="Master"
-          subtitle="HDFS + YARN on the coordination layer"
           status={state.sceneIndex >= 4 && state.sceneIndex < 7 ? 'busy' : 'healthy'}
           icon="master"
-          badge="HA-ready"
         >
           {unplaced
             ? state.blocks.map((block) => (
@@ -71,18 +60,11 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
                   layoutId={`block-${block.id}`}
                 />
               ))
-            : (
-                <span className="text-[11px] text-zinc-500">
-                  Coordinates placement, resources, and recovery
-                </span>
-              )}
+            : null}
         </NodeCard>
       </div>
 
-      <p className="relative z-10 mt-5 mb-2 font-mono text-[10px] tracking-[0.18em] text-zinc-600 uppercase">
-        Workers · store blocks · run tasks
-      </p>
-      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="relative z-10 mt-4 grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {WORKER_IDS.map((id) => {
           const status = state.workerStatus[id]
           const held = replicasOn(state.blocks, id)
@@ -90,11 +72,10 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
             <NodeCard
               key={id}
               title={WORKER_LABEL[id]}
-              subtitle="Storage + compute"
               status={status}
               icon="worker"
               failed={status === 'failed'}
-              badge={id.toUpperCase()}
+              className="min-h-[130px] sm:min-h-[150px] lg:min-h-0"
             >
               {held.map((block) => (
                 <BlockChip
@@ -119,42 +100,32 @@ export function ClusterCanvas({ state, reducedMotion }: ClusterCanvasProps) {
                     key={c.id}
                     layout
                     transition={{ duration }}
-                    className="inline-flex items-center rounded border border-violet-400/30 bg-violet-400/10 px-2 py-1 font-mono text-[10px] text-violet-200"
+                    className="inline-flex items-center rounded border border-violet-400/30 bg-violet-400/10 px-2.5 py-1 font-mono text-xs text-violet-200"
                   >
-                    yarn {c.vcores}v / {c.memMB}MB
+                    yarn
                     {c.status === 'reassigned' ? ' · reassigned' : ''}
                   </motion.span>
                 ))}
-              {held.length === 0 && status !== 'failed' && state.sceneIndex < 3 ? (
-                <span className="text-[11px] text-zinc-600">waiting for blocks</span>
-              ) : null}
             </NodeCard>
           )
         })}
       </div>
 
-      <Legend />
+      <ul className="relative z-10 mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 sm:mt-auto sm:pt-4 sm:text-sm">
+        {[
+          ['bg-zinc-400', 'Client'],
+          ['bg-cyan-400', 'Master'],
+          ['bg-emerald-400', 'Worker'],
+          ['bg-cyan-300', 'Block'],
+          ['bg-violet-300', 'Replica'],
+          ['bg-rose-500', 'Failed'],
+        ].map(([color, label]) => (
+          <li key={label} className="inline-flex items-center gap-1.5">
+            <span className={`size-2.5 rounded-full ${color}`} />
+            {label}
+          </li>
+        ))}
+      </ul>
     </section>
-  )
-}
-
-function Legend() {
-  const items = [
-    { color: 'bg-zinc-400', label: 'Client' },
-    { color: 'bg-cyan-400', label: 'Master' },
-    { color: 'bg-emerald-400', label: 'Worker' },
-    { color: 'bg-cyan-300', label: 'Block' },
-    { color: 'bg-violet-300', label: 'Replica / container' },
-    { color: 'bg-rose-500', label: 'Failed' },
-  ]
-  return (
-    <ul className="relative z-10 mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-5 text-[11px] text-zinc-500">
-      {items.map((item) => (
-        <li key={item.label} className="inline-flex items-center gap-1.5">
-          <span className={`size-2 rounded-full ${item.color}`} />
-          {item.label}
-        </li>
-      ))}
-    </ul>
   )
 }

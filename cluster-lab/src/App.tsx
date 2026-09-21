@@ -107,26 +107,33 @@ export default function App() {
   }, [go, onKill, onReplay, sceneIndex])
 
   return (
-    <div className={`flex h-full min-h-0 flex-col bg-[#07070a] text-zinc-200 ${presentation ? 'presentation' : ''}`}>
+    <div
+      className={`flex min-h-dvh flex-col bg-[#07070a] text-zinc-200 lg:h-dvh lg:min-h-0 lg:overflow-hidden ${
+        presentation ? 'presentation' : ''
+      }`}
+    >
       <TopBar
         sceneIndex={sceneIndex}
         presentation={presentation}
         onTogglePresentation={() => setPresentation((v) => !v)}
       />
       <ScenarioStrip />
-      <div className="grid min-h-0 flex-1 overflow-auto lg:grid-cols-[minmax(0,1.7fr)_minmax(300px,0.9fr)] lg:overflow-hidden">
-        <div className="relative flex min-h-[560px] flex-col lg:min-h-0">
+
+      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.95fr)] lg:overflow-hidden">
+        <div className="relative flex min-h-[420px] flex-col sm:min-h-[480px] lg:min-h-0">
           <ClusterCanvas state={state} reducedMotion={reducedMotion} />
         </div>
-        <div className="flex min-h-0 flex-col">
-          <div className={`flex min-h-0 flex-col ${presentation ? 'flex-[1.2]' : 'flex-1'}`}>
+
+        <div className="flex min-h-0 flex-col border-t border-white/8 lg:border-t-0">
+          <div className="min-h-0 lg:flex lg:min-h-0 lg:flex-[1.15] lg:flex-col">
             <Inspector state={state} mrStage={mrStage} />
           </div>
-          <div className={`flex min-h-0 flex-col ${presentation ? 'h-44' : 'h-52'}`}>
+          <div className="flex h-48 shrink-0 flex-col sm:h-56 lg:h-auto lg:min-h-0 lg:flex-[0.85]">
             <EventLog events={state.events} />
           </div>
         </div>
       </div>
+
       <PlaybackBar
         sceneIndex={sceneIndex}
         playing={playing}

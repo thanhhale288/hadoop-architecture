@@ -30,13 +30,13 @@ export function BlockChip({
     <motion.div
       layoutId={layoutId}
       layout
-      className={`inline-flex items-center gap-1.5 rounded border px-2.5 py-1 font-mono text-[11px] ${tone} ${
+      className={`inline-flex items-center gap-1.5 rounded border px-2.5 py-1.5 font-mono text-xs sm:text-sm ${tone} ${
         mapping ? 'ring-1 ring-amber-300/80' : ''
       }`}
     >
       <span className="font-medium">{label}</span>
-      <span className="opacity-70">{sizeMB} MB</span>
-      {replica ? <span className="opacity-50">×r</span> : null}
+      <span className="opacity-70">{sizeMB}</span>
+      {replica ? <span className="opacity-50">r</span> : null}
     </motion.div>
   )
 }
